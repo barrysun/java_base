@@ -1,0 +1,26 @@
+
+客户端协议处理框架
+
+无论FTP客户程序，还是HTTP客户程序，或是其他基于特定应用层协议的客户程序
+在与远程服务器通信时，都需要建立在远程服务器的连接，然后发送和接收与协议相符
+的数据。客户程序还需要对服务器发送的数据进行处理，有时要把他们转换为相应的Java对象
+Java对客户程序的通信进行了抽象，提供了通用的协议处理框架，这个框架封装了Socket，主要包括
+以下几个类：
+1 URL类：统一资源定位器，表示客户程序要访问的远程资源
+2 URLConnection类：表示客户程序与远程服务器的连接。客户程序可以从URLConnection类中获得数据输入流和输出流。
+3 URLStreamHandler类：协议处理器，主要负责创建与协议相关的URLConnection对象。
+4 ContentHandler 类：内容处理器，负责解析服务器发送的数据，把它转换为相应的java对象。
+
+
+
+
+
+实现协议处理框架
+
+所举例子都是基于HTTP协议的客户程序，JDK为HTTP协议实现了处理框架。
+哟农户自定义ECHO协议实现处理框架。创建以下类：
+1 EchoURLConnection类：继承自URLConnection类。
+2 EchoURLStreamHandler：继承自URLStreamHandler类。
+3 EchoURLStreamHandlerFactory：实现URLStreamHandlerFactory接口
+4 EchoContentHandler：继承自ContentHandler类
+5 EchoContentHandlerFactory：实现ContentHandlerFactory接口。

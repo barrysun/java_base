@@ -43,11 +43,22 @@ public class SimpleHttpServer {
 		new SimpleHttpServer().service();
 	}
 	
-	class Handler implements Runnable{
+	class Handler implements Runnable{ //Handler是内部类，负责处理HTTP请求
+		private SocketChannel socketChannel;
+       public Handler(SocketChannel socketChannel){
+			this.socketChannel=socketChannel;
+		}
 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
+			handle(socketChannel);
+		}
+		
+		
+		
+		
+		public void handle(SocketChannel socketChannel){
 			
 		}
 		

@@ -13,7 +13,7 @@ public class EchoClient {
 		//…Ë÷√URLStreamHandlerFactory
 		URL.setURLStreamHandlerFactory(new EchoURLStreamHandlerFactory());
 		//…Ë÷√ContentHandlerFactory
-		URLConnection.setContentHandlerFactory(new EchoContentHandler());
+		URLConnection.setContentHandlerFactory(new EchoContentHandlerFactory());
 		URL url=new URL("echo://localhost:8000");
 		EchoURLConnection connection=(EchoURLConnection)url.openConnection();
 		connection.setDoOutput(true);
