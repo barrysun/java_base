@@ -1,6 +1,8 @@
 package com.ch02;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 public class Sender {
@@ -18,6 +20,43 @@ public class Sender {
 	
 	public Sender() throws IOException{
 		socket=new Socket(host,port);
+	}
+	
+	public static void main(String[] args)throws Exception{
+		if(args.length>0) stopWay=Integer.parseInt(args[0]);
+		new Sender().send();
+	}
+	
+	private PrintWriter getWriter(Socket socket) throws IOException{
+		OutputStream socketOut=socket.getOutputStream();
+		return new PrintWriter(socketOut,true);
+	}
+	public void send() throws Exception{
+		
+		PrintWriter pw=getWriter(socket);
+		for(int i=0;i<20;i++){
+			String msg="hello_"+i;
+			pw.println(msg);
+			System.out.println("send:"+msg);
+			Thread.sleep(500);
+			if(i==2){
+				if(stopWay==SUDDEN_STOP){
+					System.out.println("突然终止程序");
+					System.exit(0);
+				}else if(stopWay==SOCKET_STOP){
+					System.out.println("关闭Socket并终止程序");
+				}else if(stopWay==OUTPUT_STOP){
+					socket.shutdownOutput();
+					System.out.println("关闭输出流并终止程序");
+					break;
+				}
+			}
+		}
+		
+		if(stopWay==NATURAL_STOP){
+			socket.close();
+		}
+		
 	}
 	
 	
