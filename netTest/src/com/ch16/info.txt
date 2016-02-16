@@ -1,0 +1,10 @@
+CORBA简介
+
+CORBA（Common Object Request Broker Architecture,通用对象请求代理体系结构）是一种
+分布式的软件体系结构。CORBA1.0 由对象管理组织（OMG，Object Managment Group）于1991年发布。
+CORBA最新的版本为3.0，于2002年发布。
+
+CORBA作为最早的一种分布式软件系统结构，在20世纪90年代非常流行。到了90年代后期及21世纪
+一些借鉴了CORBA的请求代理思想的分布式体系结构也逐步发展起来，如RMI、JavaEE和Web服务。由于CORBA本身
+的架构非常复杂，而且运用起来也很复杂，目前已经呈现出被新兴的Web服务取代的趋势。
+

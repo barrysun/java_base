@@ -14,3 +14,13 @@
 对象序列化主要由两种用途：
 （1）把对象的字节序列永久地保存到硬盘上，通常存放在一个文件中；
 （2）在网络上传送对象的字节序列。
+
+
+JDK类库中的序列化API
+
+java.io.ObjectOutputStream 代表对象输出流，它的writeObject(Object obj)方法
+可对参数指定的obj对象进行序列化，把得到的字节序列写到一个目标输出流中。
+
+java.io.ObjectInputStream 代表对象输入流，它的readObject()方法从一个资源输入流中读取
+字节序列，再把他们反序列化成一个对象，并将其返回。
+
