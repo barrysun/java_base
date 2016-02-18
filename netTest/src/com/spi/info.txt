@@ -1,0 +1,69 @@
+
+java的SPI机制介绍
+
+SPI的全名 Service Provider Interface。普通开发人员可能不熟悉，因为这个是针对厂商或者插件的。
+在java.util.ServiceLoader的文档里有比较详细的介绍。研究其思想，其实是和“Callback”差不多。
+“Callback”的思想是在我们调用API的时候，我们可以自己写一段逻辑代码，传入到API里面，API内部在合适
+的时候会调用它，从而实现某种程度的“定制”。
+
+典型的是Collections.sort(List<T> list,Comparator<? super T> c)这个方法，它的第二个参数
+是一个实现Comparator接口的实例。我们可以根据自己的排序规则写一个类，实现此接口，传入此方法，那么这个
+方法就会根据我们的规则对list进行排序。
+
+把这个思想扩展开来，我们用SPI来重新实现上面的例子。客户把自己的排序规则写成一个类，并且打包成Jar文件，
+这个Jar文件里面必须有META-INF目录，其下又有services目录，其下有一个文本文件，文件名即为接口的全名：
+java.util.Comparator。
+
+--META-INF
+--services
+--java.util.Comparator
+
+文件内容只有一行：
+com.company1.ComparatorProvider
+
+这一行是你实现了Comparator接口的类的全名，他的代码如下：
+package com.company1; 
+import java.util.Comparator; 
+import com.mycompany.myapp.MyItem; 
+public class ComparatorProvider implements Comparator<MyItem>{ 
+ 
+@Override 
+public int compare(MyItem o1, MyItem o2) { 
+//依据name排序 
+return o1.getName().compareTo(o2.getName()); 
+} 
+} 
+
+编译打包后，把它放到你的主程序的class path里。下面是你的主程序：
+
+//从class path中所有Jar的META-INF目录中搜索，找到合适的类并加载。 
+private static ServiceLoader<Comparator> serviceLoader 
+= ServiceLoader.load(Comparator.class); 
+public static void main(String[] args) 
+{ 
+List<MyItem> myList = new ArrayList<MyItem>(); 
+myList.add(new MyItem(2,"c","hhh")); 
+myList.add(new MyItem(3,"k","ooo")); 
+myList.add(new MyItem(4,"d","ppp")); 
+myList.add(new MyItem(5,"b","ggg")); 
+showList(myList); 
+Collections.sort(myList,getCompartor()); 
+showList(myList); 
+} 
+@SuppressWarnings("unchecked") 
+private static Comparator<MyItem> getCompartor() { 
+for(Comparator service : serviceLoader) 
+{ 
+return (Comparator<MyItem>)service; 
+} 
+return null; 
+} 
+
+
+要注意的是serviceLoader开始只是加载类，实例化要到第一次用的时候。
+类MyItem和方法showList并不重要，所以你不必在意。你可以按照这个规则，
+写另外一个排序规则的Jar,随时可以更换你的排序规则。
+
+
+
+
