@@ -2,6 +2,7 @@ package com.ch05;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
 
 public class ChannelIO {
@@ -45,9 +46,40 @@ public class ChannelIO {
 		return socketChannel.read(requestBuffer);
 	}
 	
-	
+	/**
+	 * 返回requestBuffer，它存放了请求数据
+	 * @return
+	 */
 	public ByteBuffer getReadBuf(){
 		return requestBuffer;
+	}
+	
+	/**
+	 * 发送参数指定的ByteBuffer中的数据
+	 * @param src
+	 * @return
+	 * @throws IOException
+	 */
+	public int write(ByteBuffer src)throws IOException{
+		return socketChannel.write(src);
+	}
+	/**
+	 * 把FileChannel中的数据写到SocketChannel中
+	 * @param fc
+	 * @param pos
+	 * @param len
+	 * @return
+	 * @throws IOException
+	 */
+	public long transferTo(FileChannel fc,long pos,long len)throws IOException{
+		return fc.transferTo(pos, len, socketChannel);
+	}
+	/**
+	 * 关闭SocketChannel
+	 * @throws IOException
+	 */
+	public void close() throws IOException{
+		socketChannel.close();
 	}
 
 }

@@ -14,6 +14,9 @@ public class Response implements Sendable {
 		public String toString(){return number+" "+reason;}
 		
 		static Code OK=new Code(200,"OK");
+		static Code BAD_REQUEST=new Code(400,"Bad Request");
+		static Code NOT_FOUND=new Code(404,"Not Found");
+		static Code METHOD_NOT_ALLOWED=new Code(405,"Method Not Allowed");
 		
 	}
 	
