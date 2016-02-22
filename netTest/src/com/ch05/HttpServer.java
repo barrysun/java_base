@@ -1,6 +1,7 @@
 package com.ch05;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -12,12 +13,19 @@ public class HttpServer {
 
 	private Selector selector = null;
 	private ServerSocketChannel serverSocketChannel = null;
-	private int port = 80;
+	private int port = 8080;
 	private Charset charset = Charset.forName("GBK");
 
 	public HttpServer() throws IOException {
 		// 创建Selector 和 ServerSocketChannel
 		// 把ServerSocketChannel设置为非阻塞模式，绑定80 端口
+		selector=Selector.open();
+		serverSocketChannel=ServerSocketChannel.open();
+		serverSocketChannel.socket().setReuseAddress(true);
+		serverSocketChannel.configureBlocking(false);
+		serverSocketChannel.socket().bind(new InetSocketAddress(port));
+		System.out.println("Server start ....");
+		
 
 	}
 
