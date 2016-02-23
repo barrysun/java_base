@@ -1,5 +1,8 @@
 package com.ch06;
 
+import java.io.IOException;
+import java.net.URL;
+
 /**
  * Java对客户程序的通信过程进行了抽象，提供了通用的协议处理框架
  * 这个框架封装了Socket，主要包括以下几个类。
@@ -16,5 +19,9 @@ package com.ch06;
  */
 
 public class HttpClient1 {
+	
+	public static void main(String[] args)throws IOException{
+		URL url=new URL("");
+	}
 
 }
