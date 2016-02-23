@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -65,6 +66,24 @@ public class PingClient {
 		}
 	}
 	
+	public void printFinishedTargets(){
+		//打印finishedTargets队列中的任务，Printer线程会调用该方法
+		try{
+			for(;;){
+				Target target=null;
+				synchronized(finishedTargets){
+					while(finishedTargets.size()==0){
+						finishedTargets.wait();
+					}
+					target=(Target)finishedTargets.removeFirst();
+					target.show();
+				}
+			}
+		}catch(Exception e){
+			return;
+		}
+	}
+	
 	
 	public void receiveTarget(){
 		//接收用户输入的域名，向targets队列中加入任务，主线程会调用该方法
@@ -119,8 +138,33 @@ public class PingClient {
 	}
 	
 	public void processSelectedKeys() throws IOException{
-		
+		//处理连接就绪事件，Connector线程会调用该方法
+		for(Iterator<?> it=selector.selectedKeys().iterator();it.hasNext();){
+		    SelectionKey selectionKey=(SelectionKey)it.next();
+		    it.remove();
+		    
+		    Target target=(Target)selectionKey.attachment();
+		    SocketChannel socketChannel=(SocketChannel)selectionKey.channel();
+		    
+		    try{
+		    	
+		    	if(socketChannel.finishConnect()){
+		    		selectionKey.cancel();
+		    		target.connectFinish=System.currentTimeMillis();
+		    		socketChannel.close();
+		    		addFinishedTarget(target);
+		    	}
+		    	
+		    }catch(Exception e){
+		    	socketChannel.close();
+		    	target.failure=e;
+		    	addFinishedTarget(target);
+		    }
+		    
+		}
 	}
+	
+	
 	
 	
 	
