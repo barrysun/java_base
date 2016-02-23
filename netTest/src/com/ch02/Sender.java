@@ -39,7 +39,7 @@ public class Sender {
 			pw.println(msg);
 			System.out.println("send:"+msg);
 			Thread.sleep(500);
-			if(i==2){
+			if(i==2){ //终止程序，结束通信
 				if(stopWay==SUDDEN_STOP){
 					System.out.println("突然终止程序");
 					System.exit(0);

@@ -6,11 +6,12 @@ import java.net.Socket;
 public class PortScanner {
 	
 	public static void main(String[] args){
-		String host="localhost";
+		String host="127.0.0.1";
 		if(args.length>0){
 			host=args[0];
-			new PortScanner().scan(host);
 		}
+			new PortScanner().scan(host);
+		
 	}
 	
 	public void scan(String host){
