@@ -35,7 +35,6 @@ public class HttpServer {
 
 		for (;;) {
 			int n = selector.select();
-
 			if (n == 0)
 				continue;
 			Set<?> readyKeys = selector.selectedKeys();
@@ -49,7 +48,6 @@ public class HttpServer {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
 			}
 
 		}

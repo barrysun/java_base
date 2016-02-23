@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
@@ -96,6 +97,24 @@ public class PingClient {
 	}
 	
 	public void registerTargets(){
+		//取出targets队列中的任务，向Selector注册连接就绪事件，Connector线程会调用该方法
+		synchronized(targets){
+			while(targets.size()>0){
+				Target target=(Target)targets.removeFirst();
+				try{
+					target.channel.register(selector, SelectionKey.OP_CONNECT,target);
+					
+				}catch(Exception e){
+					try{
+						target.channel.close();
+					}catch(Exception ex){
+						ex.printStackTrace();
+					}
+					target.failure=e;
+					addFinishedTarget(target);
+				}
+			}
+		}
 		
 	}
 	

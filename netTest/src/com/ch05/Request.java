@@ -27,6 +27,12 @@ public class Request {
 			if(s.equals("PUT")){
 				return PUT;
 			}
+			if(s.equals("POST")){
+				return POST;
+			}
+			if(s.equals("HEAD")){
+				return HEAD;
+			}
 			throw new IllegalArgumentException(s);
 		}
 		
@@ -88,7 +94,8 @@ public class Request {
 	 * group[3]="1.1"
 	 * group[4]="hostname"
 	 */
-	private static Pattern requestPattern = Pattern.compile("");
+	private static Pattern requestPattern = Pattern.compile("\\A([A-Z]+)+([^]+)+HTTP/([0-9\\.]+)$"
+			+".*^Host:([^]+)$.*\r\n\r\n\\z",Pattern.MULTILINE|Pattern.DOTALL);
 	
 	public static Request parse(ByteBuffer bb) throws Exception{
 		bb=deleteContent(bb);//删除请求正文
@@ -109,7 +116,7 @@ public class Request {
 			u=new URI("http://"+m.group(4)+m.group(2));
 			
 		}catch(Exception e){
-			
+			throw e;
 		}
 		//创建一个Request对象，并将其返回
 		return new Request(a,m.group(3),u);
