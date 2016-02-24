@@ -1,0 +1,132 @@
+非阻塞通信
+
+
+线程阻塞的原因
+
+导致线程阻塞的原因主要有以下几个方面
+（1）线程执行了Thread.sleep(int n)方法，线程放弃CPU，睡眠n毫秒，然后恢复运行。
+（2）线程要执行一段同步代码，由于无法获得相关的同步锁，只好进入阻塞状态，
+等到获得了同步锁，才能恢复运行。
+（3）线程执行了一个对象的wait()方法，进入阻塞状态，只有等到其他线程执行了该对象的notify()
+或者notifyAll()方法，才可能将其唤醒。
+（4）线程执行I/O操作或进行远程通信时，会因为等待相关的资源而进入阻塞状态。例如，当线程执行
+System.in.read()方法时，如果用户没有向控制台输入数据，则该线程
+会一直等待读到用户的输入数据才从read()方法返回。
+
+进行远程通信时，在客户程序中，线程在以下情况可能进入阻塞状态。
+（1）请求与服务器建立连接时，即当线程执行Socket的带参数的构造方法，或
+执行Socket的connect()方法时，会进入阻塞状态，直到连接成功，此线程才会从
+Socket的构造方法或connect()方法返回。
+（2）线程从Socket的输入流读入数据时，如果没有足够的数据，就会进入阻塞状态，
+知道读到足够的数据，或者到达输入流的末尾，或者出现了异常，才从输入流的read()
+方法返回或异常中断。输入流中有多少数据才算足够呢？这要看线程执行的read()方法的类型。
+> int read():只要输入流中有一个字节，就算足够。
+> int read(byte[] buff): 只要输入流中的字节数目与参数buff数组的长度相同，就算足够。
+> String readLine():只要输入流中有一行字符串，就算足够。值得注意的是，InputStream类并没有readLine()方法，
+在过滤流BufferedReader类中才有此方法。
+
+（3）
+
+
+
+
+
+创建非阻塞的EchoServer
+
+在非阻塞模式下，EchoServer只需要启动一个主线程，就能同时处理3件事：
+（1）接收客户的连接；
+（2）接收客户发送的数据；
+（3）向客户发回响应数据
+
+EchoServer委托Selector来负责监控接收连接就绪事件、读就绪事件和写就绪事件，如果
+有特定事件发生，就处理该事件。
+
+EchoServer类的构造方法负责启动服务器，把它绑定到一个本地端口，代码如下：
+
+
+//创建一个Selector对象
+selector=Selector.open();
+//创建一个ServerSocketChannel对象
+serverSocketChannel=ServerSocketChannel.open();
+//使得在同一个主机上关闭了服务器程序，紧接着再启动该服务器程序时，
+//可以顺利绑定到相同的端口
+serverSocketChannel.socket().setReuseAddress(true);
+//使ServerSocketChannel工作于非阻塞模式
+serverSocketChannel.configureBlocking(false);
+//把服务器进程与一个本地端口绑定
+serverSocketChannel.socket().bind(new InetSocketAddress(port));
+
+EchoServer类的service()方法负责处理本节开头说的3件事，体现主要流程的代码如下：
+
+public void service() throws IOException{
+
+  serverSocketChannel.register(selecor,SelectionKey.OP_ACCEPT);
+  while(selector.select()>0){ //第一层while循环
+    Set readyKeys=selector.selectedKeys();//获得Selector的selected-keys集合
+    Iterator it=readyKeys.iterator();
+    while(it.hasNext()){ //第二层while循环
+      SelectionKey key=null;
+      try{ //处理SelectionKey
+        key=(SelectionKey)it.next(); //取出一个SelectionKey
+        it.remove(); //把SelectionKey从Selector的selected-key集合中删除
+        if(key.isAcceptable()){处理接收连接就绪事件}
+        if(key.isReadable()){处理读就绪事件}
+        if(key.isWritable()){处理写就绪事件}
+      
+      }catch(IOException e){
+         e.printStatckTrace();
+         try{
+            if(key!=null){
+            //使这个SelectionKey失效
+            //使得Selector不再监控这个SelectionKey感兴趣的事件
+            key.cancel();
+            key.channel().close();//关闭与这个SelectionKey关联的SocketChannel
+            }
+         }catch(Exception ex){ex.printStackTrace();}
+         
+      }
+    }
+  
+  }
+
+
+}
+
+1、处理接收连接就绪事件
+
+2、处理读就绪事件
+
+3、处理写就绪事件
+
+4、编码与解码
+
+在ByteBuffer中存放的是字节，它表示字符串的编码。而程序需要把字节转换为字符串，才能进行字符串
+操作，如判断里面是否包含“\r\n”，以及截取子字符串。EchoServer类的实用方法decode()负责解码，也
+就是把字节序列转换为字符串。
+
+在send()方法中，当通过SocketChannel的write(ByteBuffer buffer)方法发送数据时，
+write(ByteBuffer buffer)方法不能直接发送字符串，而只能发送ByteBuffer中的字节。
+因此程序需要对字符串进行编码，把他们转换为字节序列，放在ByteBuffer中，然后再发送：
+
+
+5、在非阻塞模式下确保发送一行数据
+
+在send()方法的outputBuffer中存放了字符串echo:XXX的编码。
+
+
+6、删除ByteBuffer中的已处理数据
+
+
+
+
+
+
+java.nio包中的主要类
+java.nio包提供了支持非阻塞通信的类
+ServerSocketChannel：ServerSocket的替代类，支持阻塞通信与非阻塞通信
+SocketChannel：Socket的替代类，支持阻塞通信与非阻塞通信
+Selector：为ServerSocketChannel监控接收连接就绪事件，为SocketChannel监控
+连接接续、读就绪和写就绪事件。
+SelectionKey：代表ServerSocketChannel及SocketChannel向Selector注册事件
+的句柄。当一个SelectionKey对象位于Selector对象的selection-Keys集合中
+时，就表示与这个SelectionKey对象相关的事件发生了。

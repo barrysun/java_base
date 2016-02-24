@@ -5,3 +5,18 @@ Socket用法详解
 收到了客户端的连接请求，也会创建与客户连接的Socket。Socket可看做事通信连接两端的收发器
 服务器与客户端都通过Socket来收发数据。
 
+
+设置Socket的选项
+Socket有以下几个选项
+
+TCP_NODELAY:表示立即发送数据
+SO_RESUSEADDR:表示是否允许重用Socket所绑定的本地地址
+SO_TIMEOUT:表示接收数据时的等待超时时间
+SO_LINGER:表示当执行Socket的close()方法时，是否立即关闭底层的Socket
+SO_SNFBUF:表示发送数据的缓冲区的大小
+SO_RCVBUF:表示接收数据的缓冲区的大小
+SO_KEEPALIVE:表示对于长时间处于空闲状态的Socket，是否要自动把它关闭
+OOBINLINE：表示是否支持发送一个字节的TCP紧急数据
+
+
+
