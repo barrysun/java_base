@@ -13,9 +13,14 @@ public class DatagramTester {
 	
 	public DatagramTester() throws IOException{
 		
+		sendSocket=new DatagramSocket();
+		receiveSocket=new DatagramSocket(port);
+		receiver.start();
+		sender.start();
 	}
 	
 	/**
+	 * 把long数组转换为byte数组
 	 * 
 	 * @param data
 	 * @return
@@ -26,6 +31,9 @@ public class DatagramTester {
 	}
 	/**
 	 * 
+	 * 把byte数组转换为long数组
+	 * 
+	 * 
 	 * @param data
 	 * @return
 	 * @throws IOException
@@ -35,6 +43,7 @@ public class DatagramTester {
 	}
 	
 	public void send(byte[] bigData)throws IOException{
+		
 		
 	}
 	
