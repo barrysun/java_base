@@ -15,8 +15,7 @@ public class CallableAndFuture {
 	public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException{
 		ExecutorService threadPool=Executors.newSingleThreadExecutor();
 		
-		Future future=
-		threadPool.submit(new Callable<String>(){
+		Future<String> future=threadPool.submit(new Callable<String>(){
 
 			@Override
 			public String call() throws Exception {
