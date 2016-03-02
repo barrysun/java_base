@@ -1,4 +1,4 @@
-package com.thread.zxx.ch05;
+package com.thread.zxx.ch06;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,9 @@ import java.util.Random;
  */
 public class ThreadScopShareData {
 	
-	static ThreadLocal<Integer> threadLocal=new ThreadLocal<Integer>();
+	//private static int data=0;
+	private static Map threadData=new HashMap<Thread,Integer>();
+	
 	public static void main(String[] args){
 		for(int i=0;i<2;i++){
 			new Thread(new Runnable(){
@@ -20,7 +22,7 @@ public class ThreadScopShareData {
 				public void run() {
 					int data=new Random().nextInt();
 					System.out.println(Thread.currentThread().getName()+" get data :"+data);
-					threadLocal.set(data);
+					threadData.put(Thread.currentThread(),data );
 					new A().get();
 					new B().get();
 				}
@@ -34,7 +36,7 @@ public class ThreadScopShareData {
 
 		public void get() {
 			
-			System.out.println("A from "+Thread.currentThread().getName()+" get  data :"+threadLocal.get());
+			System.out.println("A from "+Thread.currentThread().getName()+" get  data :"+threadData.get(Thread.currentThread()));
 			
 			
 		}
@@ -42,7 +44,7 @@ public class ThreadScopShareData {
 	}
 	static class B{
 		public void get() {
-			System.out.println("B from "+Thread.currentThread().getName()+" has put data :"+threadLocal.get());
+			System.out.println("B from "+Thread.currentThread().getName()+" has put data :"+threadData.get(Thread.currentThread()));
 			
 			
 		}
