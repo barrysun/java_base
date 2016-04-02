@@ -1,0 +1,43 @@
+java集合整理
+
+java集合架构支持3种类型的集合：规则集(Set)、线性表（List）、和图（Map），
+分别定义在Set、List、Map中。Set实例存储一组互相同的元素（集合），List实例
+存储一组顺序排列的元素（表），Map存储一组对象---关键值得映射
+
+Collection接口：
+      
+       Set接口：
+         HashSet具体类
+         LinkedHashSet具体类
+         TreeSet具体类
+       List接口：
+         ArrayList具体类
+         LinkedList具体类
+                        向量类Vector具体类
+         Stack具体类
+
+Map接口：
+        HashMap类
+        LinkedHashMap类
+        TreeMap类
+        WeakHashMap类
+        
+
+
+1.Vector & ArrayList
+1）Vector的方法都是同步的（Synchronized），是线程安全的（thread-safe），而ArrayList的方法不是，由于线程
+的同步必然要影响性能，因此，ArrayList的性能比Vector好。
+2）当Vector或ArrayList中元素超过它的初始大小时，Vector会将它的容积翻倍，而ArrayList只增加50%的大小，这样ArrayList
+有利于节约内存空间。
+
+2.Hashtable & HashMap
+Hashtable和HashMap它们的性能方面的比较类似Vector和ArrayList，比如Hashtable的方法时同步的，而HashMap的不是
+
+3.ArrayList & LinkedList
+ArrayList的内部实现是基于内部数组Object[]，所以从概念上讲，它更像数组，但LinkedList的内部实现是基于一组连接的记录，它更像
+一个链表结构，所以，它们在性能上有很大的差别：
+从上面的分析可知,在ArrayList的前面或中间插入数据时,你必须将其后的所有数据相应的后移,这样必然要花费较多时间，所以,当你的操作
+是在一列数据的后面添加数据而不是在前面或中间,并且需要随机地访问其中的元素时,使用ArrayList会提供比较好的性能； 而访问链表中
+的某个元素时,就必须从链表的一端开始沿着连接方向一个一个元素地去查找,直到找到所需的元素为止，所以,当你的操作是在一列数据的前
+面或中间添加或删除数据，并且按照顺序访问其中的元素时，就应该使用LinkedList了
+
