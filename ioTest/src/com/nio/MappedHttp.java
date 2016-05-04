@@ -20,6 +20,7 @@ public class MappedHttp {
 	private static final String LINE_SEP="\r\n";
 	private static final String SERVER_ID="Server:Ronsoft Dummy Server";
 	private static final String HTTP_HDR="HTTP/1.0 200 OK"+LINE_SEP+SERVER_ID+LINE_SEP;
+	private static final String HTTP_404_HDR="";
 	
 	private static final String MSG_404="Could not open file";
 	
