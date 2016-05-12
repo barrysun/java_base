@@ -2,10 +2,10 @@ package com.nio;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
 import java.util.List;
 
-import sun.nio.ch.ThreadPool;
 
 /**
  * 使用线程池来为通道提供服务
@@ -70,7 +70,52 @@ public class SelectSocketsThreadPool extends SelectSockets {
 		}
 		//Loop forever waiting for work to do
 		public synchronized void run(){
+			System.out.println(this.getName()+" is ready");
+			while(true){
+				try{
+					
+				}catch(Exception e){
+					e.printStackTrace();
+					//Clear interrupt status
+					this.interrupted();
+				}
+				if(key==null){
+					continue;//just in case
+				}
+				System.out.println(this.getName()+" has been awakened");
+				try{
+					drainChannel(key);
+				}catch(Exception e){
+					System.out.println("Caught '"+e+"'closing channel");
+				}
+			}
+		}
+		
+		void drainChannel(SelectionKey key) throws Exception{
+			SocketChannel channel=(SocketChannel)key.channel();
+			int count;
 			
+			buffer.clear();//Empty buffer
+			//Loop while data is available;channel is nonblocking
+			while((count=channel.read(buffer))>0){
+				buffer.flip();//make buffer readable
+				//Send the data; may not go all at once
+				while(buffer.hasRemaining()){
+					channel.write(buffer);
+				}
+				//WARNING: the above loop is evil.
+				//See comments is superclass
+				buffer.clear();//Empty buffer
+			}
+			if(count<0){
+				//Close channel on EOF;invalidates the key
+				channel.close();
+				return ;
+			}
+			//Resume interest in OP_READ
+			key.interestOps(key.interestOps()|SelectionKey.OP_READ);
+			//Cycle the selector so this key is active again
+			key.selector().wakeup();
 		}
 	}
 	
